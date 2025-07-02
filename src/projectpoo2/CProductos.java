@@ -9,7 +9,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import javax.swing.JOptionPane; 
 /**
  *
  * @author Fran
@@ -207,7 +206,7 @@ public class CProductos {
         String sql = "INSERT INTO TProductos(cantidad, name, tipoProd, costo) VALUES (?,?,?,?)";
         
         try {
-            PreparedStatement ps = o.establecerConexion().prepareStatement(sql);
+            PreparedStatement ps = o.establecerConexion().prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
             ps.setInt(1, cantidad);
             ps.setString(2, name);
             ps.setString(3, tipoProd);
@@ -231,8 +230,9 @@ public class CProductos {
             smartphone.getTipoProd(),
             smartphone.getCosto()
         );
-
+        
         if (idProductoBase != -1) {
+            smartphone.setId(idProductoBase);
             CConexion o = new CConexion();
             Connection conexion = null;
             PreparedStatement ps = null;
@@ -268,6 +268,7 @@ public class CProductos {
         );
 
         if (idProductoBase != -1) {
+            tv.setId(idProductoBase);
             CConexion o = new CConexion();
             Connection conexion = null;
             PreparedStatement ps = null;
@@ -306,6 +307,7 @@ public class CProductos {
             cpu.getCosto()
         );
         if (idProductoBase != -1) {
+            cpu.setId(idProductoBase);
             CConexion o = new CConexion();
             Connection conexion = null;
             PreparedStatement ps = null;
@@ -343,6 +345,7 @@ public class CProductos {
         );
  
         if (idProductoBase != -1) {
+            mueble.setId(idProductoBase);
             CConexion o = new CConexion();
             Connection conexion = null;
             PreparedStatement ps = null;

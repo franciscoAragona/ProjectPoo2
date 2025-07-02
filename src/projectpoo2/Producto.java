@@ -4,6 +4,7 @@
  */
 package projectpoo2;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 /**
@@ -80,26 +81,53 @@ public abstract class Producto {
     
     abstract double calcularPrecioVenta();
     abstract void mostrarDetalles();
-    
+    //muestra atributos producto
     public void mostrarProducto(){
         System.out.println("ID:"+this.getId()+"; Nombre:"+this.getName()+"; Precio:"+this.getPrecio()+"; cant:"+this.getCantidad());
     }
     
-    public void crearProducto(){
+    public void crearProducto() {
         Scanner sc = new Scanner(System.in);
         
-        System.out.print("Nombre del producto: ");
-        String name = sc.nextLine();
-        this.setName(name);
+        String name = "";
+        do {            
+            try {
+                System.out.print("Nombre del producto: ");
+                name = sc.nextLine();
+                this.setName(name);
+                if(name.equals("")){
+                    throw new EntradaVaciaException("No se ingreso ningun nombre");
+                }
+            } catch (EntradaVaciaException e) {
+                System.out.println(e.getMessage());
+            }
+        } while (name.trim().equals(""));
         
-        System.out.print("Costo del producto: ");
-        Double costo = sc.nextDouble();
-        sc.nextLine();
-        this.setCosto(costo);
+        Double costo = -1.0;
+        do {            
+            try {
+                System.out.print("Costo del producto: ");
+                costo = sc.nextDouble();
+                sc.nextLine();
+                this.setCosto(costo);
+            } catch (InputMismatchException e) {
+                System.out.println("Dato incorrecto, ingrese un numero");
+                sc.nextLine();
+            }
+        } while (costo == -1.0);  
         
-        System.out.print("Cantidad de productos: ");
-        int cant = sc.nextInt();
-        sc.nextLine();
-        this.setCantidad(cant);
+        int cant = -1;
+        do {            
+            try {
+                System.out.print("Cantidad de productos: ");
+                cant = sc.nextInt();
+                sc.nextLine();
+                this.setCantidad(cant);
+            } catch (InputMismatchException e) {
+                System.out.println("Dato incorrecto, ingrese un numero");
+                sc.nextLine();
+            }
+        } while (cant == -1); 
+        
     }
 }

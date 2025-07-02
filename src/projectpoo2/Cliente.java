@@ -6,9 +6,6 @@ package projectpoo2;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Scanner;
-import javax.swing.JTextField;
-
 /**
  *
  * @author Fran
@@ -69,7 +66,6 @@ public class Cliente {
     public void agregarAlCarrito(TiendaOnline t, Producto prod, int cant){
         if(t.getStock().hayStock(t.getStock(), prod, cant)){
             t.modificarProductos(prod.getId(), prod.getName(),prod.getTipoProd(), prod.getCosto(), prod.getCantidad() - cant);
-            //prod.setCantidad(prod.getCantidad() - cant);
             for(int i = 1; i <= cant; i ++){
                 this.getCarrito().getS().add(prod);
             }
@@ -87,7 +83,6 @@ public class Cliente {
             for(Producto p: t.getStock().getS()){
                 if(p.getId() == prod.getId()){
                     t.modificarProductos(prod.getId(), prod.getName(),prod.getTipoProd(), prod.getCosto(), prod.getCantidad() + cant);
-                    //2prod.setCantidad(prod.getCantidad() + cant);
                     this.getCarrito().setTotal(this.getCarrito().getTotal() - prod.getPrecio()*cant);
                 }
             }    

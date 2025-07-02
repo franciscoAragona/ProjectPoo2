@@ -6,6 +6,7 @@ package projectpoo2;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 /**
  *
@@ -13,7 +14,7 @@ import java.util.Scanner;
  */
 public class TiendaOnline {
     private Stock stock = new Stock();
-    CClientes objCClientes = new CClientes();
+    private CClientes objCClientes = new CClientes();
     private ArrayList<Cliente> clientes = objCClientes.cargarTableroClientes();
     
     
@@ -33,6 +34,14 @@ public class TiendaOnline {
         this.stock = stock;
     }
 
+    public CClientes getObjCClientes() {
+        return objCClientes;
+    }
+
+    public void setObjCClientes(CClientes objCClientes) {
+        this.objCClientes = objCClientes;
+    }
+    
     public ArrayList<Cliente> getClientes() {
         return clientes;
     }
@@ -44,7 +53,6 @@ public class TiendaOnline {
     public Cliente ingresarCliente(){
         Cliente cliente = new Cliente();
         Scanner sc = new Scanner(System.in); 
-        CClientes objCClientes = new CClientes();
         System.out.println("--- Guardar Nuevo Cliente ---"); 
         String cellInput = "";
         boolean cellValido = false;
@@ -71,8 +79,8 @@ public class TiendaOnline {
             }
         }
         cliente.setName(nameInput);
-        
-        objCClientes.insertarTableroClientes(cellInput, nameInput);
+        int id =this.getObjCClientes().insertarTableroClientes(cellInput, nameInput);
+        cliente.setId(id);
         this.getClientes().add(cliente);
         clienteMenu(this, cliente);
         return cliente;
@@ -90,7 +98,6 @@ public class TiendaOnline {
     
     public void modificarClientes(){
         mostrarClientes();
-        CClientes objCClientes = new CClientes(); 
         Scanner sc = new Scanner(System.in);
         boolean idValido = false;
         int id = 0;
@@ -102,6 +109,7 @@ public class TiendaOnline {
                 idValido = true;
             } catch (Exception e) {
                 System.out.println("¡Error! Entrada inválida para id");
+                sc.nextLine();
             }
         }
         
@@ -136,14 +144,13 @@ public class TiendaOnline {
             }
         }
         if(name != ""){
-            objCClientes.modificarTableroClientes(id, cell, name);
+            this.getObjCClientes().modificarTableroClientes(id, cell, name);
             mostrarClientes();
         }
     }// **|*
     
     public void eliminarClientes(){
         mostrarClientes();
-        CClientes objCClientes = new CClientes(); 
         Scanner sc = new Scanner(System.in);
         boolean idValido = false;
         int id = 0;
@@ -153,41 +160,51 @@ public class TiendaOnline {
                 id = sc.nextInt();
                 sc.nextLine();
                 idValido = true;
-                objCClientes.eleiminarTableroClientes(id);
+                this.getObjCClientes().eleiminarTableroClientes(id);
                 for (int i = this.getClientes().size() - 1; i >= 0; i--) {
-                    Cliente cliente = this.getClientes().get(i); // Obtenemos el producto en la posición actual
+                    Cliente cliente = this.getClientes().get(i); // Obtenemos el cliente en la posición actual
                     if (cliente.getId() == id) {
-                        this.getClientes().remove(i); // Eliminamos el producto por su índice
+                        this.getClientes().remove(i); // Eliminamos el cliente por su índice
                    }
                 }
                 mostrarClientes();
             } catch (Exception e) {
                 System.out.println("¡Error! Entrada inválida para id");
+                sc.nextLine();
             }
         }
     }//**|*
     
     public static void clienteMenu(TiendaOnline t, Cliente cliente) {
         Scanner scanner = new Scanner(System.in);
-        int op;
+        int op = -1;
 
         do {
-            System.out.println("\n--- Menú de Cliente ---");
-            System.out.println("1. Ver Carrito");//*
-            System.out.println("2. Agregar Producto al Carrito");//**
-            System.out.println("3. Eliminar Producto del Carrito");//**
-            System.out.println("4. Vaciar Carrito");//*
-            System.out.println("5. Realizar Compra");//*
-            System.out.println("0. Salir");
-            System.out.print("Seleccione una opción: ");
             
-            while (!scanner.hasNextInt()) {
-                System.out.println("Entrada inválida. Por favor, ingrese un número.");
-                scanner.next(); 
+            boolean opvalid = false;
+            while(!opvalid){
+                System.out.println("\n--- Menú de Cliente ---");
+                System.out.println("1. Ver Carrito");//*
+                System.out.println("2. Agregar Producto al Carrito");//**
+                System.out.println("3. Eliminar Producto del Carrito");//**
+                System.out.println("4. Vaciar Carrito");//*
+                System.out.println("5. Realizar Compra");//*
+                System.out.println("0. Salir");
                 System.out.print("Seleccione una opción: ");
+                try {
+                    op = scanner.nextInt();
+                    opvalid = true;
+                    if(op<0 || op>5){
+                        throw new ValorFueraDeRangoException("Ingrese un valor entero entre 0 y 5");
+                    }
+                    scanner.nextLine();
+                } catch(InputMismatchException e) {
+                    System.out.println("Dato incorrecto, ingrese un numero");
+                    scanner.nextLine();
+                }catch(ValorFueraDeRangoException v){
+                    System.out.println(v.getMessage());
+                }
             }
-            op = scanner.nextInt();
-            scanner.nextLine(); 
 
             switch (op) {
                 case 1:
@@ -200,81 +217,95 @@ public class TiendaOnline {
                     }
                     break;
                 case 2:
-                    t.mostrarProductos();
-                    System.out.print("Ingrese el ID del producto a agregar: ");
-                    while (!scanner.hasNextInt()) {
-                        System.out.println("Entrada inválida. Por favor, ingrese un número para el ID.");
-                        scanner.next();
+                    if(t.getStock().getS().isEmpty()){
+                        System.out.println("No hay productos en stock");
+                    }else{ 
+                        t.mostrarProductos();
                         System.out.print("Ingrese el ID del producto a agregar: ");
-                    }
-                    int productIdToAdd = scanner.nextInt();
-                    scanner.nextLine();
-
-                    System.out.print("Ingrese la cantidad a agregar: ");
-                    while (!scanner.hasNextInt()) {
-                        System.out.println("Entrada inválida. Por favor, ingrese un número para la cantidad.");
-                        scanner.next();
-                        System.out.print("Ingrese la cantidad a agregar: ");
-                    }
-                    int quantityToAdd = scanner.nextInt();
-                    scanner.nextLine(); 
-                    Producto productToAdd = null;
-                    for (Producto p : t.getStock().getS()) {
-                        if (p.getId() == productIdToAdd) {
-                            productToAdd = p;
-                            break;
+                        while (!scanner.hasNextInt()) {
+                            System.out.println("Entrada inválida. Por favor, ingrese un número para el ID.");
+                            scanner.next();
+                            System.out.print("Ingrese el ID del producto a agregar: ");
                         }
-                    }
+                        int productIdToAdd = scanner.nextInt();
+                        scanner.nextLine();
 
-                    if (productToAdd != null) {
-                        cliente.agregarAlCarrito(t, productToAdd, quantityToAdd);
-                    } else {
-                        System.out.println("Producto no encontrado en el stock.");
+                        System.out.print("Ingrese la cantidad a agregar: ");
+                        while (!scanner.hasNextInt()) {
+                            System.out.println("Entrada inválida. Por favor, ingrese un número para la cantidad.");
+                            scanner.next();
+                            System.out.print("Ingrese la cantidad a agregar: ");
+                        }
+                        int quantityToAdd = scanner.nextInt();
+                        scanner.nextLine(); 
+                        Producto productToAdd = null;
+                        for (Producto p : t.getStock().getS()) {
+                            if (p.getId() == productIdToAdd) {
+                                productToAdd = p;
+                                break;
+                            }
+                        }
+
+                        if (productToAdd != null) {
+                            cliente.agregarAlCarrito(t, productToAdd, quantityToAdd);
+                        } else {
+                            System.out.println("Producto no encontrado en el stock.");
+                        }
                     }
                     break;
                 case 3:
-                    cliente.verCarrito();
-                    System.out.print("Ingrese el ID del producto a eliminar del carrito: ");
-                    while (!scanner.hasNextInt()) {
-                        System.out.println("Entrada inválida. Por favor, ingrese un número para el ID.");
-                        scanner.next();
+                    if(cliente.getCarrito().getS().isEmpty()){
+                        System.out.println("no hay productos en el carrito");
+                    }else{
+                        
+                    
+                        cliente.verCarrito();
                         System.out.print("Ingrese el ID del producto a eliminar del carrito: ");
-                    }
-                    int productIdToRemove = scanner.nextInt();
-                    scanner.nextLine();
-
-                    System.out.print("Ingrese la cantidad a eliminar: ");
-                    while (!scanner.hasNextInt()) {
-                        System.out.println("Entrada inválida. Por favor, ingrese un número para la cantidad.");
-                        scanner.next();
-                        System.out.print("Ingrese la cantidad a eliminar: ");
-                    }
-                    int quantityToRemove = scanner.nextInt();
-                    scanner.nextLine(); 
-                    Producto productToRemove = null;
-                    for (Producto p : cliente.getCarrito().getS()) {
-                        if (p.getId() == productIdToRemove) {
-                            productToRemove = p;
-                            break;
+                        while (!scanner.hasNextInt()) {
+                            System.out.println("Entrada inválida. Por favor, ingrese un número para el ID.");
+                            scanner.next();
+                            System.out.print("Ingrese el ID del producto a eliminar del carrito: ");
                         }
-                    }
+                        int productIdToRemove = scanner.nextInt();
+                        scanner.nextLine();
 
-                    if (productToRemove != null) {
-                        cliente.eliminarDelCarrito(t, productToRemove, quantityToRemove);
-                    } else {
-                        System.out.println("Producto no encontrado en el carrito.");
+                        System.out.print("Ingrese la cantidad a eliminar: ");
+                        while (!scanner.hasNextInt()) {
+                            System.out.println("Entrada inválida. Por favor, ingrese un número para la cantidad.");
+                            scanner.next();
+                            System.out.print("Ingrese la cantidad a eliminar: ");
+                        }
+                        int quantityToRemove = scanner.nextInt();
+                        scanner.nextLine(); 
+                        Producto productToRemove = null;
+                        for (Producto p : cliente.getCarrito().getS()) {
+                            if (p.getId() == productIdToRemove) {
+                                productToRemove = p;
+                                break;
+                            }
+                        }
+
+                        if (productToRemove != null) {
+                            cliente.eliminarDelCarrito(t, productToRemove, quantityToRemove);
+                        } else {
+                            System.out.println("Producto no encontrado en el carrito.");
+                        }
                     }
                     break;
                 case 4:
-                    System.out.print("¿Está seguro que desea vaciar el carrito? (s/n): ");
-                    String confirmVaciar = scanner.nextLine();
-                    if (confirmVaciar.equalsIgnoreCase("s")) {
-                        cliente.vaciarCarrito(t);
-                        System.out.println("Carrito vaciado.");
+                    if (cliente.getCarrito().getS().isEmpty()) {
+                        System.out.println("El carrito está vacío.");
                     } else {
-                        System.out.println("Operación cancelada.");
+                        System.out.print("¿Está seguro que desea vaciar el carrito? (s/n): ");
+                        String confirmVaciar = scanner.nextLine();
+                        if (confirmVaciar.equalsIgnoreCase("s")) {
+                            cliente.vaciarCarrito(t);
+                            System.out.println("Carrito vaciado.");
+                        } else if (confirmVaciar.equalsIgnoreCase("n")){
+                            System.out.println("Operación cancelada.");
+                        }
+                        break;
                     }
-                    break;
                 case 5:
                     if (cliente.getCarrito().getS().isEmpty()) {
                         System.out.println("No puede realizar una compra, el carrito está vacío.");
@@ -288,8 +319,6 @@ public class TiendaOnline {
                 case 0:
                     System.out.println("Saliendo del menú de cliente.");
                     break;
-                default:
-                    System.out.println("Opción inválida. Por favor, intente de nuevo.");
             }
         } while (op != 0);
         
@@ -385,7 +414,6 @@ public class TiendaOnline {
                 p.setCantidad(newCantidad); 
                 objCProductos.modificarTableroProductos(id, newCantidad, newName,newTipoProd, newCosto); 
                 found = true;
-                System.out.println("Producto con ID " + id + " modificado exitosamente.");
                 break;
             }
         }

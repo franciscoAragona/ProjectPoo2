@@ -4,6 +4,7 @@
  */
 package projectpoo2;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 /**
@@ -39,30 +40,49 @@ public class Smartphone extends Electronico implements GenerarProducto<Smartphon
     public void setAlmacenamiento(int almacenamiento) {
         this.almacenamiento = almacenamiento;
     }
-    
+    //implementacion abstract metod()
     @Override
     double calcularPrecioVenta() {return this.getCosto()*1.30;}
-
+    //implementacion abstract metod()
     @Override
     void mostrarDetalles() {
         this.mostrarElectronico();
         System.out.println("SistemaO:"+this.getSistOperativo()+"; Almacenamiento:"+this.getAlmacenamiento());
     }
-
+ 
     @Override
     public Smartphone inicializarProducto() {
         Scanner sc = new Scanner(System.in);
         this.crearElectronico();
               
-        System.out.print("Sistema Operativo del Smartphone: ");
-        String so = sc.nextLine();
-        this.setSistOperativo(so);
+        String so = "";
+        do {            
+            try {
+                System.out.print("Sistema Operativo del Smartphone: ");
+                so = sc.nextLine();
+                this.setSistOperativo(so);
+                if(so.equals("")){
+                    throw new EntradaVaciaException("No se ingreso el sistema operativo");
+                }
+            } catch (EntradaVaciaException e) {
+                System.out.println(e.getMessage());
+            }
+             
+        } while (so.trim().equals(""));  
         
-        System.out.print("Almacenamiento del Smartphone: ");
-        int alm = sc.nextInt();
-        sc.nextLine();
-        this.setAlmacenamiento(alm);
-        
+        int alm = -1;
+        do {            
+            try {
+                System.out.print("Almacenamiento del Smartphone: ");
+                alm = sc.nextInt();
+                sc.nextLine();
+                this.setAlmacenamiento(alm); 
+            } catch (InputMismatchException e) {
+                System.out.println("Dato incorrecto, ingrese un numero");
+                sc.nextLine();
+            }
+        } while (alm == -1); 
+ 
         this.setPrecio(this.calcularPrecioVenta());
         
         return this;

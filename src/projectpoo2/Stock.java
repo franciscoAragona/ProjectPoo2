@@ -6,7 +6,7 @@ package projectpoo2;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 /**
@@ -77,27 +77,42 @@ public class Stock {
     }//  **|*
     
     public void stockMenu(TiendaOnline tienda){
-        objCProductos.cargarTableroProductos(tienda);
+        this.getObjCProductos().cargarTableroProductos(tienda);
     }
             
     public void createStock(TiendaOnline t) throws SQLException{
         Scanner sc = new Scanner(System.in);
         boolean answ = true ;
+        int op = -1;
         while (answ) {            
-            System.out.println("que tipo de producto se va a agregar a el Stock?");
-            System.out.println("1. Smartphone");
-            System.out.println("2. Tv");
-            System.out.println("3. Cpu");
-            System.out.println("4. Mueble");
-            System.out.println("5. salir");
-            int op = sc.nextInt();
+            do {                
+                try {
+                    System.out.println("que tipo de producto se va a agregar a el Stock?");
+                    System.out.println("1. Smartphone");
+                    System.out.println("2. Tv");
+                    System.out.println("3. Cpu");
+                    System.out.println("4. Mueble");
+                    System.out.println("5. salir");
+                    op = sc.nextInt();
+                    if(op<1 || op>5){
+                        throw new ValorFueraDeRangoException("Ingrese un valor entero entre 1 y 5");
+                    }
+                } catch (InputMismatchException e) {
+                    System.out.println("Dato incorrecto, ingrese un numero");
+                    sc.nextLine();
+                }catch(ValorFueraDeRangoException v){
+                    System.out.println(v.getMessage());
+                    op = -1;
+                }
+            } while (op ==-1);
+            
+            
             switch (op) {
                 case 1:
                     Smartphone smartphone = new Smartphone();
                     smartphone.inicializarProducto();
-                    objCProductos.insertarSmartphone(smartphone);
                     smartphone.setTipoProd("s");
-                    
+                    objCProductos.insertarSmartphone(smartphone);
                     this.getS().add(smartphone);
                     break;
                 case 2:
@@ -124,8 +139,6 @@ public class Stock {
                 case 5:
                     answ = false;
                     break;
-                default:
-                    throw new AssertionError();
             }
         }    
     }//  **|*

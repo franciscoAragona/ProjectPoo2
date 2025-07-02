@@ -4,6 +4,7 @@
  */
 package projectpoo2;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 /**
@@ -24,8 +25,6 @@ public class Cpu extends Electronico implements GenerarProducto<Cpu>{
         this.velocidadGhz = velocidadGhz;
         this.nucleos = nucleos;
     }
-
-    
 
     public double getGeneracion() {
         return generacion;
@@ -51,34 +50,60 @@ public class Cpu extends Electronico implements GenerarProducto<Cpu>{
         this.nucleos = nucleos;
     }
     
+    //implementacion abstract metod()
     @Override
     double calcularPrecioVenta() {return this.getCosto()*1.35;}
-
+    
+    //implementacion abstract metod()
     @Override
     void mostrarDetalles() {
         this.mostrarElectronico();
         System.out.println("Generación:" + this.getGeneracion() + "; Velocidad:" + this.getVelocidadGhz() + "GHz; Núcleos:" + this.getNucleos());
     }
-
+    //genera un tipo de producto
     @Override
     public Cpu inicializarProducto() {
         Scanner sc = new Scanner(System.in);
         this.crearElectronico();
         
-        System.out.print("Generacion del Cpu: ");
-        Double gen = sc.nextDouble();
-        sc.nextLine();
-        this.setGeneracion(gen);
+        Double gen = -1.0;
+        do {            
+            try {
+                System.out.print("Generacion del Cpu: ");
+                gen = sc.nextDouble();
+                sc.nextLine();
+                this.setGeneracion(gen);
+            } catch (InputMismatchException e) {
+                System.out.println("Dato incorrecto, ingrese un numero");
+                sc.nextLine();
+            }
+        } while (gen == -1.0); 
         
-        System.out.print("velocidadGhz del Cpu: ");
-        Double velocidadGhz = sc.nextDouble();
-        sc.nextLine();
-        this.setVelocidadGhz(velocidadGhz);
+        Double velocidadGhz = -1.0;
+        do {            
+            try {
+                System.out.print("velocidadGhz del Cpu: ");
+                velocidadGhz = sc.nextDouble();
+                sc.nextLine();
+                this.setVelocidadGhz(velocidadGhz);
+            } catch (InputMismatchException e) {
+                System.out.println("Dato incorrecto, ingrese un numero");
+                sc.nextLine();
+            }
+        } while (velocidadGhz == -1.0); 
         
-        System.out.print("Cantidad de nucleos del Cpu: ");
-        int nucleos = sc.nextInt();
-        sc.nextLine();
-        this.setNucleos(nucleos);
+        int nucleos = -1;
+        do {            
+            try {
+                System.out.print("Cantidad de nucleos del Cpu: ");
+                nucleos = sc.nextInt();
+                sc.nextLine();
+                this.setNucleos(nucleos);
+            } catch (InputMismatchException e) {
+                System.out.println("Dato incorrecto, ingrese un numero");
+                sc.nextLine();
+            }
+        } while (nucleos == -1); 
         
         this.setPrecio(this.calcularPrecioVenta());
         

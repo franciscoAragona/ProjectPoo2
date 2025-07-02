@@ -4,6 +4,7 @@
  */
 package projectpoo2;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 /**
@@ -58,34 +59,69 @@ public abstract class Hogar extends Producto{
     public void setProfundiad(double profundiad) {
         this.profundiad = profundiad;
     }
-    
+    //muestra atributos hogar
     public void mostrarHogar(){
         this.mostrarProducto();
         System.out.println("Material:"+this.getMaterial()+"; Alto:"+this.getAlto()+"; Ancho:"+this.getAncho()+"; Profundidad:"+this.getProfundiad());
     }
     
-    public void crearHogar(){
+    public void crearHogar() {
         this.crearProducto();
         Scanner sc = new Scanner(System.in);
+        String material = "";
+        do {            
+            try {
+                System.out.print("Material del producto: ");
+                material = sc.nextLine();
+                this.setMaterial(material);
+                if(material.equals("")){
+                    throw new EntradaVaciaException("No se ingreso ningun material");
+                }
+            } catch (EntradaVaciaException e) {
+                System.out.println(e.getMessage());
+            }
+            
+        } while (material.trim().equals(""));
         
-        System.out.print("Material del producto: ");
-        String material = sc.nextLine();
-        this.setMaterial(material);
+        Double alto = -1.0;
+        do {            
+            try {
+                System.out.print("Alto del producto: ");
+                alto = sc.nextDouble();
+                sc.nextLine();
+                this.setAlto(alto);
+            } catch (InputMismatchException e) {
+                System.out.println("Dato incorrecto, ingrese un numero");
+                sc.nextLine();
+            }
+        } while (alto == -1.0);  
         
-        System.out.print("Alto del producto: ");
-        Double alto = sc.nextDouble();
-        sc.nextLine();
-        this.setAlto(alto);
+        Double ancho = -1.0;
+        do {            
+            try {
+                System.out.print("Ancho del producto: ");
+                ancho = sc.nextDouble();
+                sc.nextLine();
+                this.setAncho(ancho);
+            } catch (InputMismatchException e) {
+                System.out.println("Dato incorrecto, ingrese un numero");
+                sc.nextLine();
+            }
+        } while (ancho == -1.0); 
+       
+        Double profundidad = -1.0;
+        do {            
+            try {
+                System.out.print("Profundidad del producto: ");
+                profundidad = sc.nextDouble();
+                sc.nextLine();
+                this.setProfundiad(profundidad);
+            } catch (InputMismatchException e) {
+                System.out.println("Dato incorrecto, ingrese un numero");
+                sc.nextLine();
+            }
+        } while (profundidad == -1.0); 
         
-        System.out.print("Ancho del producto: ");
-        Double ancho = sc.nextDouble();
-        sc.nextLine();
-        this.setAncho(ancho);
-        
-        System.out.print("Profundidad del producto: ");
-        Double profundidad = sc.nextDouble();
-        sc.nextLine();
-        this.setProfundiad(profundidad);
     }
     
 }

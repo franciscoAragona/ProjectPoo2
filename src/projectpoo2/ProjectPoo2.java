@@ -16,30 +16,35 @@ public class ProjectPoo2 {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) throws SQLException  {
         // TODO code application logic here
         TiendaOnline tiendaOnline = new TiendaOnline();
-        tiendaOnline.getStock().getObjCProductos().cargarTableroProductos(tiendaOnline);
+        tiendaOnline.getStock().stockMenu(tiendaOnline);
         Scanner mainScanner = new Scanner(System.in);
-        int mainOp;
+        int mainOp = -1;
 
         do {
+            mainOp = -1;
             System.out.println("\n--- Menú Principal de la Tienda Online ---");
             System.out.println("1. Gestión de Clientes");
             System.out.println("2. Gestión de Productos");
             System.out.println("3. Modificar clientes");
+            System.out.println("4. Eliminar clientes");
             System.out.println("0. Salir de la Aplicación");
             System.out.print("Seleccione una opción: ");
 
             try {
                 mainOp = mainScanner.nextInt();
-                mainScanner.nextLine();  
+                mainScanner.nextLine();
+                if(mainOp<0 || mainOp>4){
+                    throw new ValorFueraDeRangoException("Ingrese un valor entero entre 0 y 4");
+                }
             } catch (InputMismatchException e) {
-                System.out.println("Entrada inválida. Por favor, ingrese un número.");
-                mainScanner.next();  
-                mainOp = -1;  
+                System.out.println("Dato incorrecto, ingrese un numero");
+                mainScanner.nextLine();
+            }catch(ValorFueraDeRangoException v){
+                System.out.println(v.getMessage());
             }
-
 
             switch (mainOp) {
                 case 1:
@@ -50,16 +55,21 @@ public class ProjectPoo2 {
                     tiendaOnline.productoMenu(tiendaOnline); 
                     break;
                 case 3:
-
-                    tiendaOnline.modificarClientes();
+                    if(tiendaOnline.getClientes().isEmpty()){
+                        System.out.println("No hay clientes");
+                    }else{
+                        tiendaOnline.modificarClientes();
+                    }
+                    break;
+                case 4:
+                    if(tiendaOnline.getClientes().isEmpty()){
+                        System.out.println("No hay clientes");
+                    }else{
+                        tiendaOnline.eliminarClientes();
+                    }
                     break;
                 case 0:
                     System.out.println("Saliendo de la aplicación. ¡Hasta luego!");
-                    break;
-                default:
-                    if (mainOp != -1) { 
-                        System.out.println("Opción inválida. Por favor, intente de nuevo.");
-                    }
                     break;
             }
         } while (mainOp != 0);

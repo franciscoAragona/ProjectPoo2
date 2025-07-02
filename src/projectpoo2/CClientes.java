@@ -6,8 +6,6 @@ package projectpoo2;
 
 import java.sql.*;
 import java.util.ArrayList;
-import javax.swing.JOptionPane;
-
 /**
  *
  * @author Fran
@@ -45,22 +43,25 @@ public class CClientes {
         return listaClientes;
     }//**
     
-    public void insertarTableroClientes(String cell, String name){
+    public int insertarTableroClientes(String cell, String name){
         CConexion o = new CConexion();
+        ResultSet rs = null;
         String sql = "INSERT INTO TClientes(cell, name) VALUES (?,?)";
-        
+        int newid = -1;
         try {
-            PreparedStatement ps = o.establecerConexion().prepareStatement(sql);
+            PreparedStatement ps = o.establecerConexion().prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, cell);
             ps.setString(2, name);
             
             ps.execute();
-
+            rs = ps.getGeneratedKeys();
+            newid = rs.getInt(1);
         } catch (Exception e) {
             System.out.println( "SAFE..FAIL: "+ e.toString());
         }finally{
             o.cerrarConexion();
         }
+        return newid;
     }//**
         
     public void modificarTableroClientes(int id,  String cell, String name){

@@ -7,6 +7,7 @@ package projectpoo2;
 /**
  *
  * @author Fran
+ * 
  */
 public interface GenerarProducto<T> {
     T inicializarProducto(); 

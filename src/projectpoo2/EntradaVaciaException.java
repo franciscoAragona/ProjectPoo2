@@ -8,10 +8,8 @@ package projectpoo2;
  *
  * @author Fran
  */
-public class entradaTOException extends Exception{
-
-    public entradaTOException(String message) {
-        super(message);
-    }
-      
+public class EntradaVaciaException extends RuntimeException{
+    public EntradaVaciaException(String mensaje) {
+        super(mensaje);
+    }   
 }

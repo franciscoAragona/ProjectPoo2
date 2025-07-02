@@ -4,6 +4,7 @@
  */
 package projectpoo2;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 /**
@@ -38,7 +39,7 @@ public abstract class Electronico extends Producto{
     public void setMesesGarantia(int mesesGarantia) {
         this.mesesGarantia = mesesGarantia;
     }
-    
+    //muestra atributos electronico
     public void mostrarElectronico(){
         this.mostrarProducto();
         System.out.println("Marca:"+this.getMarca()+"; Garantia:"+this.getMesesGarantia()+"meses");
@@ -46,17 +47,34 @@ public abstract class Electronico extends Producto{
     
     public void crearElectronico(){
         this.crearProducto();
-        CProductos objCProductos = new CProductos();
         Scanner sc = new Scanner(System.in);
+        String marca = "";
+        do {            
+            try {
+                System.out.print("Marca del Electronico: ");
+                marca = sc.nextLine();
+                this.setMarca(marca);
+                if(marca.equals("")){
+                    throw new EntradaVaciaException("No se ingreso ninguna marca");
+                }
+            } catch (EntradaVaciaException e) {
+                System.out.println(e.getMessage());
+            }
+        } while (marca.trim().equals(""));
         
-        System.out.print("Marca del Electronico: ");
-        String marca = sc.nextLine();
-        this.setMarca(marca);
+        int mesesGarantia = -1;
+        do {            
+            try {
+                System.out.print("Meses de garantia del Electronico: ");
+                mesesGarantia = sc.nextInt();
+                sc.nextLine();
+                this.setMesesGarantia(mesesGarantia);
+            } catch (InputMismatchException e) {
+                System.out.println("Dato incorrecto, ingrese un numero");
+                sc.nextLine();
+            }
+        } while ( mesesGarantia == -1);
         
-        System.out.print("Meses de garantia del Electronico: ");
-        int mesesGarantia = sc.nextInt();
-        sc.nextLine();
-        this.setMesesGarantia(mesesGarantia);
     }
     
 }

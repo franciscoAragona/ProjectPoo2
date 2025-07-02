@@ -4,6 +4,7 @@
  */
 package projectpoo2;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 /**
@@ -59,10 +60,10 @@ public class Tv extends Electronico implements GenerarProducto<Tv>{
     public void setSmartTv(String smartTv) {
         this.smartTv = smartTv;
     }
-    
+    //implementacion abstract metod()
     @Override
     double calcularPrecioVenta() {return this.getCosto()*1.25;}
-
+    //implementacion abstract metod()
     @Override
     void mostrarDetalles() {
         this.mostrarElectronico();
@@ -74,23 +75,62 @@ public class Tv extends Electronico implements GenerarProducto<Tv>{
         Scanner sc = new Scanner(System.in);
         this.crearElectronico();
         
-        System.out.print("Tamaño en pulgadas de la pantalla: ");
-        double pulg = sc.nextDouble();
-        sc.nextLine(); 
-        this.setPulg(pulg);
-
-        System.out.print("Tipo de pantalla (ej: LED, OLED): ");
-        String tipoPantalla = sc.nextLine();
-        this.setTipoPantalla(tipoPantalla);
-
-        System.out.print("Frecuencia de actualización (Hz): ");
-        int hz = sc.nextInt();
-        sc.nextLine(); // limpiar buffer
-        this.setHz(hz);
-
-        System.out.print("¿Es Smart TV? (true/false): ");
-        String smartTv = sc.nextLine();
-        this.setSmartTv(smartTv);
+        Double pulg = -1.0;
+        do {            
+            try {
+                System.out.print("Tamaño en pulgadas de la pantalla: ");
+                pulg = sc.nextDouble();
+                sc.nextLine(); 
+                this.setPulg(pulg);
+            } catch (InputMismatchException e) {
+                System.out.println("Dato incorrecto, ingrese un numero");
+                sc.nextLine();
+            }
+        } while (pulg == -1.0); 
+        
+        
+        String tipoPantalla = "";
+        do {            
+            try {
+                System.out.print("Tipo de pantalla (ej: LED, OLED): ");
+                tipoPantalla = sc.nextLine();
+                this.setTipoPantalla(tipoPantalla);
+                if(tipoPantalla.equals("")){
+                    throw new EntradaVaciaException("No se ingreso el tipo de pantalla");
+                }
+            } catch (EntradaVaciaException e) {
+                System.out.println(e.getMessage());
+            }
+        } while (tipoPantalla.trim().equals(""));
+        
+        int hz = -1;
+        do {            
+            try {
+                System.out.print("Frecuencia de actualización (Hz): ");
+                hz = sc.nextInt();
+                sc.nextLine(); // limpiar buffer
+                this.setHz(hz); 
+            } catch (InputMismatchException e) {
+                System.out.println("Dato incorrecto, ingrese un numero");
+                sc.nextLine();
+            }
+        } while (hz == -1); 
+        
+        
+        String smartTv = "";
+        do {            
+            try {
+                System.out.print("¿Es Smart TV? (si/no): ");
+                smartTv = sc.nextLine();
+                this.setSmartTv(smartTv);
+                if(!smartTv.equals("si") && !smartTv.equals("no")){
+                    throw new ValorFueraDeRangoException("Ingrese si o no");
+                }
+            } catch (ValorFueraDeRangoException e) {
+                System.out.println(e.getMessage());
+                smartTv = "";
+            }
+        } while (smartTv.trim().equals(""));
         
         this.setPrecio(this.calcularPrecioVenta());
         

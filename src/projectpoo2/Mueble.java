@@ -38,10 +38,10 @@ public class Mueble extends Hogar implements GenerarProducto<Mueble>{
     public void setRequiereEnsamblaje(String requiereEnsamblaje) {
         this.requiereEnsamblaje = requiereEnsamblaje;
     }
-    
+    //implementacion abstract metod()
     @Override
     double calcularPrecioVenta() {return this.getCosto()*1.20;}
-
+    //implementacion abstract metod()
     @Override
     void mostrarDetalles() {
         this.mostrarHogar();
@@ -53,12 +53,36 @@ public class Mueble extends Hogar implements GenerarProducto<Mueble>{
         Scanner sc = new Scanner(System.in);
         this.crearHogar();
         
-        System.out.print("¿Requiere ensamblaje? (true/false): ");
-        String requiereEnsamblaje = sc.nextLine();
-        this.setRequiereEnsamblaje(requiereEnsamblaje);
-
-        this.setPrecio(this.calcularPrecioVenta());
+        String tipoMueble = "";
+        do {            
+            try {
+                System.out.print("¿Que tipo de mueble es?");
+                tipoMueble = sc.nextLine();
+                this.setTipoMueble(tipoMueble);
+                if(tipoMueble.equals("")){
+                    throw new EntradaVaciaException("No se ingreso ningun tipo de mueble");
+                }
+            } catch (EntradaVaciaException e) {
+                System.out.println(e.getMessage());
+            }
+            
+        } while (tipoMueble.trim().equals(""));
         
+        String requiereEnsamblaje = "";
+        do {            
+            try {
+                System.out.print("¿Requiere ensamblaje? (si/no): ");
+                requiereEnsamblaje = sc.nextLine();
+                this.setRequiereEnsamblaje(requiereEnsamblaje);
+                if(!requiereEnsamblaje.equals("si") && !requiereEnsamblaje.equals("no")){
+                    throw new ValorFueraDeRangoException("Ingrese si o no");
+                }
+            } catch (ValorFueraDeRangoException e) {
+                System.out.println(e.getMessage());
+                requiereEnsamblaje = "";
+            }
+        } while (requiereEnsamblaje.trim().equals("")); 
+        this.setPrecio(this.calcularPrecioVenta());
         return this;
     }
     

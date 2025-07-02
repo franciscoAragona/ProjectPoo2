@@ -5,7 +5,6 @@
 package projectpoo2;
 
 import java.sql.*;
-import javax.swing.JOptionPane;
 /**
  *
  * @author Fran
